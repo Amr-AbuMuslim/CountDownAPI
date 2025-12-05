@@ -57,7 +57,6 @@ app.get("/countdown", (req, res) => {
   const data = readData();
   res.json(data);
 });
-
 // POST new entry
 app.post("/countdown", (req, res) => {
   try {
@@ -68,21 +67,23 @@ app.post("/countdown", (req, res) => {
     }
 
     const data = readData();
+
+    // Convert dealDate to UTC
+    const utcDealDate = new Date(dealDate).toISOString();
+
     const newEntry = {
       id: `cd-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(), // Automatically UTC
       salesAgent,
-      dealDate,
+      dealDate: utcDealDate,
       companyName,
       totalNights
     };
 
     data.entries.push(newEntry);
     saveData(data);
-      res.json(newEntry);
-      
-      console.log(data);
-      
+
+    res.json(newEntry);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to save new entry" });
